@@ -4,165 +4,41 @@
 <meta charset="UTF-8">
 <title>Enhanced Uber Trip Filter</title>
 <style>
-  :root {
-    --accept: #28a745;
-    --decline: #dc3545;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    margin: 0;
-    padding-top: 80px; /* Extra space for bigger banner */
-    background: #f9f9f9;
-    color: #222;
-  }
-  .banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 22px 0;
-    font-weight: 700;
-    font-size: 26px;
-    color: white;
-    text-align: center;
-    z-index: 9999;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-    animation: fadeIn 0.5s ease-in-out;
-    transition: background 0.3s;
-  }
-  .accept {
-    background-color: var(--accept);
-  }
-  .decline {
-    background-color: var(--decline);
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .container {
-    max-width: 480px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
-  }
-  textarea {
-    width: 100%;
-    height: 150px;
-    font-size: 14px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    resize: vertical;
-    font-family: monospace;
-  }
-  button {
-    margin-top: 12px;
-    padding: 12px 18px;
-    font-size: 16px;
-    border: none;
-    border-radius: 10px;
-    background-color: #007aff;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  button:hover {
-    background-color: #0056b3;
-  }
-  .log-entry {
-    margin-bottom: 8px;
-    font-size: 14px;
-    padding: 8px;
-    border-radius: 6px;
-    background: #f8f9fa;
-  }
-  .filters-panel {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    background: #e9ecef;
-  }
-  input[type="number"] {
-    width: 80px;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-  }
-  .accept-text { color: var(--accept); }
-  .decline-text { color: var(--decline); }
-  .summary-box {
-    padding: 15px;
-    border-radius: 8px;
-    background: #f8f9fa;
-    margin: 15px 0;
-  }
-  .toggle-container {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
-    gap: 10px;
-  }
-  .toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-  }
-  input:checked + .slider {
-    background-color: #007aff;
-  }
-  input:checked + .slider:before {
-    transform: translateX(26px);
-  }
-  .toggle-label {
-    font-weight: 500;
-  }
+  :root { --accept: #28a745; --decline: #dc3545; }
+  body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif; margin:0; padding-top:80px; background:#f9f9f9; color:#222;}
+  .banner { position:fixed; top:0; left:0; width:100%; padding:22px 0; font-weight:700; font-size:26px; color:white; text-align:center; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,0.3); animation:fadeIn 0.5s ease-in-out; transition:background 0.3s;}
+  .accept { background-color:var(--accept);}
+  .decline { background-color:var(--decline);}
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;}}
+  .container { max-width:480px; margin:20px auto; padding:20px; background:white; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.1);}
+  textarea { width:100%; height:150px; font-size:14px; padding:10px; border-radius:8px; border:1px solid #ccc; resize:vertical; font-family:monospace;}
+  button { margin-top:12px; padding:12px 18px; font-size:16px; border:none; border-radius:10px; background-color:#007aff; color:white; cursor:pointer; transition:background 0.2s;}
+  button:hover { background-color:#0056b3;}
+  .log-entry { margin-bottom:8px; font-size:14px; padding:8px; border-radius:6px; background:#f8f9fa;}
+  .filters-panel { margin-top:20px; padding:15px; border-radius:8px; background:#e9ecef;}
+  input[type="number"] { width:80px; padding:8px; border-radius:6px; border:1px solid #ced4da;}
+  .accept-text { color:var(--accept);}
+  .decline-text { color:var(--decline);}
+  .summary-box { padding:15px; border-radius:8px; background:#f8f9fa; margin:15px 0;}
+  .toggle-container { display:flex; align-items:center; margin-top:15px; gap:10px;}
+  .toggle-switch { position:relative; display:inline-block; width:60px; height:34px;}
+  .toggle-switch input { opacity:0; width:0; height:0;}
+  .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;}
+  .slider:before { position:absolute; content:""; height:26px; width:26px; left:4px; bottom:4px; background-color:white; transition:.4s; border-radius:50%;}
+  input:checked + .slider { background-color:#007aff;}
+  input:checked + .slider:before { transform:translateX(26px);}
+  .toggle-label { font-weight:500;}
 </style>
 </head>
 <body>
-
 <div id="verdictBanner" class="banner" style="display:none;"></div>
-
 <div class="container">
   <h2>Enhanced Uber Trip Filter</h2>
-  
   <textarea id="inputText" placeholder="Paste Uber trip offer text here..."></textarea>
-  
   <div style="margin-top: 15px;">
     <button onclick="processTrip()">Calculate & Filter</button>
     <button onclick="toggleFilters()">Toggle Filters</button>
   </div>
-  
   <div class="toggle-container">
     <span class="toggle-label">Mode:</span>
     <label class="toggle-switch">
@@ -171,7 +47,6 @@
     </label>
     <span class="toggle-label" id="modeLabel">Manual</span>
   </div>
-  
   <div id="filters" class="filters-panel" style="display:none;">
     <h3>Profitability Filters</h3>
     <div>
@@ -185,13 +60,10 @@
     </div>
     <button onclick="saveSettings()">Save Settings</button>
   </div>
-  
   <div id="output" class="summary-box"></div>
-  
   <h3>Trip History Log</h3>
   <div id="log" style="max-height: 200px; overflow-y: auto;"></div>
 </div>
-
 <script>
 // Configurable settings with defaults
 let MIN_PAYOUT = 25;
@@ -199,62 +71,72 @@ let MIN_PER_MILE = 1.5;
 let MIN_PER_HOUR = 40;
 let AUTOMATED_MODE = false;
 
-// Load saved filters and mode from localStorage
 function loadSettings() {
   const savedPayout = localStorage.getItem('minPayout');
   const savedPerMile = localStorage.getItem('minPerMile');
   const savedPerHour = localStorage.getItem('minPerHour');
   const savedMode = localStorage.getItem('automatedMode');
-  
   if (savedPayout) MIN_PAYOUT = parseFloat(savedPayout);
   if (savedPerMile) MIN_PER_MILE = parseFloat(savedPerMile);
   if (savedPerHour) MIN_PER_HOUR = parseFloat(savedPerHour);
   if (savedMode) AUTOMATED_MODE = savedMode === 'true';
-  
-  // Update UI
   document.getElementById('minPayout').value = MIN_PAYOUT;
   document.getElementById('minPerMile').value = MIN_PER_MILE;
   document.getElementById('minPerHour').value = MIN_PER_HOUR;
   document.getElementById('automatedMode').checked = AUTOMATED_MODE;
   document.getElementById('modeLabel').textContent = AUTOMATED_MODE ? 'Automated' : 'Manual';
 }
-
 function toggleFilters() {
   const filters = document.getElementById("filters");
   filters.style.display = filters.style.display === "none" ? "block" : "none";
 }
-
 function saveSettings() {
   MIN_PAYOUT = parseFloat(document.getElementById("minPayout").value);
   MIN_PER_MILE = parseFloat(document.getElementById("minPerMile").value);
   MIN_PER_HOUR = parseFloat(document.getElementById("minPerHour").value);
   AUTOMATED_MODE = document.getElementById("automatedMode").checked;
-  
-  // Save to localStorage
   localStorage.setItem('minPayout', MIN_PAYOUT);
   localStorage.setItem('minPerMile', MIN_PER_MILE);
   localStorage.setItem('minPerHour', MIN_PER_HOUR);
   localStorage.setItem('automatedMode', AUTOMATED_MODE);
-  
   document.getElementById('modeLabel').textContent = AUTOMATED_MODE ? 'Automated' : 'Manual';
   alert("Settings saved!");
 }
-
-// Toggle change handler
 document.getElementById('automatedMode').addEventListener('change', function() {
   AUTOMATED_MODE = this.checked;
   localStorage.setItem('automatedMode', AUTOMATED_MODE);
   document.getElementById('modeLabel').textContent = AUTOMATED_MODE ? 'Automated' : 'Manual';
 });
 
-// Improved time parsing (handles hours and minutes)
-function parseTime(text) {
-  let hours = 0, minutes = 0;
-  const hrMatch = text.match(/(\d+)\s*hr/);
-  if(hrMatch) hours = parseInt(hrMatch[1], 10);
-  const minMatch = text.match(/(\d+)\s*min/);
-  if(minMatch) minutes = parseInt(minMatch[1], 10);
-  return hours * 60 + minutes;
+// Robust time/distance pair parsing for Uber trip offers
+function parseTripDetails(text) {
+  let totalMinutes = 0;
+  let totalMiles = 0;
+  // Match "X hr Y min (Z mi)", "X mins (Z mi)", "X hr (Z mi)"
+  const regex = /(?:(\d+)\s*(?:hr|hrs|hour|hours))?\s*(?:(\d+)\s*(?:min|mins|minute|minutes))?\s*\(([\d.]+)\s*(?:mi|mile|miles)\)/gi;
+  let match;
+  let found = false;
+  while ((match = regex.exec(text)) !== null) {
+    found = true;
+    const hours = match[1] ? parseInt(match[1], 10) : 0;
+    const mins = match[2] ? parseInt(match[2], 10) : 0;
+    const miles = parseFloat(match[3]);
+    totalMinutes += hours * 60 + mins;
+    totalMiles += miles;
+  }
+  // Fallback: sum all mins and all miles if no pairs found
+  if (!found) {
+    let minRegex = /(\d+)\s*(?:min|mins|minute|minutes)/gi;
+    let distRegex = /(\d+(\.\d+)?)\s*(?:mi|mile|miles)/gi;
+    let minMatch, distMatch;
+    while ((minMatch = minRegex.exec(text)) !== null) {
+      totalMinutes += parseInt(minMatch[1], 10);
+    }
+    while ((distMatch = distRegex.exec(text)) !== null) {
+      totalMiles += parseFloat(distMatch[1]);
+    }
+  }
+  return { totalMinutes, totalMiles };
 }
 
 function processTrip() {
@@ -273,25 +155,8 @@ function processTrip() {
   const payoutMatch = input.match(/\$([\d.]+)/);
   const payout = payoutMatch ? parseFloat(payoutMatch[1]) : 0;
 
-  // Parse all times and distances using robust method
-  const timeDistRegex = /(\d+\s*(?:hr|mins|min))\s*\(([\d.]+)\s*mi\)/g;
-  let totalMinutes = 0;
-  let totalMiles = 0;
-  let match;
-  
-  while((match = timeDistRegex.exec(input)) !== null) {
-    totalMinutes += parseTime(match[1]);
-    totalMiles += parseFloat(match[2]);
-  }
-
-  // Fallback parsing if no matches found
-  if(totalMinutes === 0) {
-    const timeMatches = Array.from(input.matchAll(/(\d+)\s*min/g)).map(m => parseInt(m[1]));
-    const distMatches = Array.from(input.matchAll(/(\d+(\.\d+)?)\s*mi/g)).map(m => parseFloat(m[1]));
-    
-    if(timeMatches.length > 0) totalMinutes = timeMatches.reduce((a, b) => a + b, 0);
-    if(distMatches.length > 0) totalMiles = distMatches.reduce((a, b) => a + b, 0);
-  }
+  // Use robust parsing
+  const { totalMinutes, totalMiles } = parseTripDetails(input);
 
   if(totalMinutes === 0 || totalMiles === 0) {
     output.innerHTML = "<p class='decline-text'>Could not parse trip details. Please check format.</p>";
@@ -328,11 +193,9 @@ function processTrip() {
     <div>
       <h3>💵 Trip Info:</h3>
       <p>$${payout.toFixed(2)} for ${totalMinutes} min, ${totalMiles.toFixed(1)} mi</p>
-      
       <h3>📊 Estimates:</h3>
       <p>$${perMile.toFixed(2)} per mile<br>
       $${perHour.toFixed(2)} per hour</p>
-      
       <h3>🎯 Verdict:</h3>
       <p class="${verdictClass}">${verdictSymbol} ${verdict}</p>
       ${reasons.length > 0 ? `<p>Reasons: ${reasons.join(', ')}</p>` : ''}
@@ -340,8 +203,6 @@ function processTrip() {
   `;
 
   output.innerHTML = summaryHTML;
-
-  // Always show the banner; speech only in automated mode
   banner.textContent = `${verdictSymbol} ${verdict}`;
   banner.className = "banner " + (verdict === "ACCEPT" ? "accept" : "decline");
   banner.style.display = "block";
@@ -361,7 +222,6 @@ function processTrip() {
   log.prepend(logEntry);
 }
 
-// Initialize settings on load
 window.onload = loadSettings;
 </script>
 </body>
