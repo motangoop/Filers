@@ -64,12 +64,13 @@
   <h3>Trip History Log</h3>
   <div id="log" style="max-height: 200px; overflow-y: auto;"></div>
 </div>
+
 <script>
 // Configurable settings with defaults
 let MIN_PAYOUT = 25;
 let MIN_PER_MILE = 1.5;
 let MIN_PER_HOUR = 40;
-let AUTOMATED_MODE = false;
+let AUTOMATED_MODE = true;
 
 function loadSettings() {
   const savedPayout = localStorage.getItem('minPayout');
@@ -112,7 +113,6 @@ document.getElementById('automatedMode').addEventListener('change', function() {
 function parseTripDetails(text) {
   let totalMinutes = 0;
   let totalMiles = 0;
-  // Match "X hr Y min (Z mi)", "X mins (Z mi)", "X hr (Z mi)"
   const regex = /(?:(\d+)\s*(?:hr|hrs|hour|hours))?\s*(?:(\d+)\s*(?:min|mins|minute|minutes))?\s*\(([\d.]+)\s*(?:mi|mile|miles)\)/gi;
   let match;
   let found = false;
@@ -124,7 +124,6 @@ function parseTripDetails(text) {
     totalMinutes += hours * 60 + mins;
     totalMiles += miles;
   }
-  // Fallback: sum all mins and all miles if no pairs found
   if (!found) {
     let minRegex = /(\d+)\s*(?:min|mins|minute|minutes)/gi;
     let distRegex = /(\d+(\.\d+)?)\s*(?:mi|mile|miles)/gi;
@@ -151,11 +150,8 @@ function processTrip() {
     return;
   }
 
-  // Parse payout
   const payoutMatch = input.match(/\$([\d.]+)/);
   const payout = payoutMatch ? parseFloat(payoutMatch[1]) : 0;
-
-  // Use robust parsing
   const { totalMinutes, totalMiles } = parseTripDetails(input);
 
   if(totalMinutes === 0 || totalMiles === 0) {
@@ -164,14 +160,11 @@ function processTrip() {
     return;
   }
 
-  // Calculate metrics
   const perMile = payout / totalMiles;
   const perHour = payout / (totalMinutes / 60);
-
-  // Determine verdict with reasons
   let verdict = "ACCEPT";
   let reasons = [];
-  
+
   if(payout < MIN_PAYOUT) {
     verdict = "DECLINE";
     reasons.push(`$${payout.toFixed(2)} < $${MIN_PAYOUT.toFixed(2)} payout`);
@@ -185,11 +178,10 @@ function processTrip() {
     reasons.push(`$${perHour.toFixed(2)}/hr < $${MIN_PER_HOUR.toFixed(2)}/hr`);
   }
 
-  // Format output
   const verdictClass = verdict === "ACCEPT" ? "accept-text" : "decline-text";
   const verdictSymbol = verdict === "ACCEPT" ? "✅" : "❌";
-  
-  const summaryHTML = `
+
+  output.innerHTML = `
     <div>
       <h3>💵 Trip Info:</h3>
       <p>$${payout.toFixed(2)} for ${totalMinutes} min, ${totalMiles.toFixed(1)} mi</p>
@@ -202,16 +194,15 @@ function processTrip() {
     </div>
   `;
 
-  output.innerHTML = summaryHTML;
   banner.textContent = `${verdictSymbol} ${verdict}`;
   banner.className = "banner " + (verdict === "ACCEPT" ? "accept" : "decline");
   banner.style.display = "block";
+
   if (AUTOMATED_MODE && 'speechSynthesis' in window) {
     const utterance = new SpeechSynthesisUtterance(verdict === "ACCEPT" ? "Accept" : "Decline");
     speechSynthesis.speak(utterance);
   }
 
-  // Always add to log
   const logEntry = document.createElement("div");
   logEntry.className = "log-entry";
   logEntry.innerHTML = `
@@ -222,7 +213,19 @@ function processTrip() {
   log.prepend(logEntry);
 }
 
-window.onload = loadSettings;
+// ✅ THIS is the new part: auto-load trip text from ?trip=
+window.onload = function () {
+  const params = new URLSearchParams(window.location.search);
+  const tripText = params.get("trip");
+  if (tripText) {
+    const decoded = decodeURIComponent(tripText.replace(/\+/g, ' '));
+    document.getElementById("inputText").value = decoded;
+    setTimeout(() => {
+      processTrip();
+    }, 300);
+  }
+  loadSettings?.();
+};
 </script>
 </body>
 </html>
